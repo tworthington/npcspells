@@ -1,9 +1,9 @@
 * NPC Spell List Generator
 A simple Perl script to generate lists of spells based on NPC level.
 
-The code takes two parameters: NPC level and the list of spells to use. The list of spells is in org format, which boils down to a pipe-delimited file ("pipe" being the | character). It's not rocket science.
+The code takes two parameters: NPC level and the list of spells to use. The list of spells is in org format, which boils down to a pipe-delimited file ("pipe" being the | character). It's not rocket science and you can probably get Excel to read and write it.
 
-This data file consists of spells and frequencies, where  a frequency is 'C', 'U', 'R', or 'V' or number. The weightings for the letters are:
+This data file consists of spells and frequencies, where  a frequency is 'C', 'U', 'R', or 'V' or a number. The weightings for the letters are:
 
 | Letter | Weight |
 |--------+--------|
@@ -16,7 +16,7 @@ If the value is a number then that number represents the weight. This can be zer
 
 The included file - =mumemorised.org= - represents a rough guess at how often each of the magic-user spells would be memorised by an encountered NPC on an adventure. It covers all PHB and UA magic-user spells and their reverses (Good/Evil reverses are not split out as they would depend too much on the specific NPC - although they can be split by editing the file easily enough).
 
-Preparing lists for magic users in different contexts, or of differing styles, is simple a matter of copying this sample file, renaming it and adjusting the weights.
+Preparing lists for magic users in different contexts, or of differing styles, is simply a matter of copying this sample file, renaming it and adjusting the weights.
 
 Similarly, any campaign-specific spells can simply be tagged on to the end of the columns. Be sure to include any blank columns if you extend off the bottom of the current list.
 
@@ -24,17 +24,18 @@ Similarly, any campaign-specific spells can simply be tagged on to the end of th
  - I've set only a very few spells to zero - who's wandering around with Permanency memorised?
  - All UA spells are at least uncommon.
  - All spells with a personal name are very rare, this reflects my own campaign.
- - Spells which might be used on adventure but normally from a scroll have been given a weight of 1.
+ - Spells which might be used on adventure but almost always from a scroll have been given a weight of 1.
  - Most damage-dealing spells are common.
  - Wall of Force is rare due to its cost.
  - Limited Wish, Wish, Gate, and Haste are all very rate because of the ageing effect which I have assumed requires a system shock roll for.
 
 * Use
 1. Stick the perl script =npcmu.pl= somewhere along with the datafiles.
-2. execute =./npcmu 18 mumemorised.org=, where 18 is the level of the magic-user, and mumemorised.org is the master list to use
-3. Copy the output somewhere
+2. Make the script executable.
+3. execute =./npcmu 18 mumemorised.org=, where 18 is the level of the magic-user, and mumemorised.org is the master list to use.
+4. Copy the output somewhere.
 
-Here's an example:
+Here's an example necromancer for Geoffrey:
 #+BEGIN_SRC 
 ./npcmu.pl 10 mumemorised.org 
 Level 1:
@@ -63,3 +64,10 @@ Hold Monster
 Feeblemind
 
 #+END_SRC
+
+* TODOs
+- The code doesn't reject duplicates at the moment, which is fine for memorised spells but no use for generating books, so a different script is needed for that, or a flag to this one.
+- Other spellcasters should be handled.
+- Low levels are treated just as randomly as any other level, so it will generate a 1st level magic user with Confuse Languages as their only spell. Might need to re-roll.
+- If there's too much hue and cry about the .org format then I'll maybe change it to csv.
+- It would be nice if the spells were sorted alphabetically, although the current unsorted list might be useful too.
