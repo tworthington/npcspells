@@ -15,13 +15,18 @@ $L=1;
 foreach $level(@numspells)
 {
     print "Level $L:\n";
+    @thesespells=();
     for(1..$level)
     {
-        $t=getspell($L,$masterfile);
-        print "$t\n";
+        push @thesespells,getspell($L,$masterfile);       
     }
     $L++;
-    print "\n";
+    {
+        local $,="\n";
+        sort @thesespells;
+        print @thesespells;
+    }
+    print "\n\n";
 }
 
 sub roll
