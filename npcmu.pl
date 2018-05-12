@@ -23,7 +23,7 @@ foreach $level(@numspells)
     $L++;
     {
         local $,="\n";
-        sort @thesespells;
+        @thesespells=sort @thesespells;
         print @thesespells;
     }
     print "\n\n";
