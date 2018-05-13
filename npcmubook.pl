@@ -30,30 +30,35 @@ foreach $level(@numspells)
 
     $limit=1e6 if !defined($limit);
 
+    @thesespells=();
+    @unknown=();
+
     if($L==1)
     {
-        $level+=4;
+        $level+=3;
+        push @thesespells,(firstoff(),firstdef(),firstmisc());
+        map {$allspells{$_}=1} @thesespells;
     }
 
     $level=$level+($lv-firstget($L));
     
     $level=min($level,$limit);
-    
-    @thesespells=();
-    @unknown=();
 
+    $rerolls=3;
     while(@thesespells < $level)
     {
         my $spell=getspell($L,$masterfile);
         if($spell)
         {
-            if ($spell eq 'Read Magic' || roll(1,100) <= $knowspell[$int])
+            #Everyone has read magic, even Dimwell has at least one spell at each level
+            if ($spell eq 'Read Magic' || @thesespells == 0 || roll(1,100) <= $knowspell[$int])
             {
                 push @thesespells,$spell
             }
             else
             {
                 push @unknown, ($spell);
+                $level-=1 if $rerolls--<1 && $L>1;
             }
             $allspells{$spell}=1;
         }
@@ -62,10 +67,9 @@ foreach $level(@numspells)
             last;
         }
     }
-    
-   
+       
     {
-        my $c=@thesespells;
+        local $c=@thesespells;
         print "Level $L ($c @ ${knowspell[$int]}):\n";
         local $,="\n";
         if(!$nonoknows && @unknown)
@@ -75,7 +79,7 @@ foreach $level(@numspells)
             print @unknown;
             print "\n\n";
         }
-        print "Know:\n";
+        print "Known:\n";
         @thesespells=sort @thesespells;
         print @thesespells;
     }
@@ -208,10 +212,10 @@ sub getspell
 
             @parts=split/\s*\|\s*/;
             shift @parts;  #empty 1st col
-            $spell=$parts[($lv-1)*2];
+            my $spell=$parts[($lv-1)*2];
             $freq=$parts[($lv-1)*2+1];
             $freq=0 if $allspells{$spell};
-            
+
             if($spell && $freq)
             {
                 if($freq>0) # Is a number, not a letter code
@@ -236,4 +240,93 @@ sub getspell
     }
     close $fh;
     return $result;
+}
+
+sub firstoff
+{
+    my @spells=('Dummy 1st',
+                'Burning Hands',
+                'Charm Person',
+                'Enlarge',
+                'Friends',
+                'Light',
+                'Magic Missile',
+                'Push',
+                'Shocking Grasp',
+                'Sleep');
+
+    my $spell='';
+
+    my $d10=roll(1,10);
+    if($d10<10)
+    {
+        return $spells[$d10];
+    }
+
+    do
+    {
+        $spell=getspell(1,$masterfile);
+    }until(grep(/^$spell$/, @spells));
+
+    return $spell;
+}
+
+sub firstdef
+{
+    my @spells=('Dummy 1st defensive',
+                'Affect Normal Fires',
+                'Dancing Lights',
+                'Feather Fall',
+                'Hold Portal',
+                'Jump',
+                'Protection From Good/Evil',
+                'Shield',
+                'Spider Climb',
+                'Ventriloquism'
+                );
+
+    my $spell='';
+
+    my $d10=roll(1,10);
+    if($d10<10)
+    {
+        return $spells[$d10];
+    }
+
+    do
+    {
+        $spell=getspell(1,$masterfile);
+    }until(grep(/^$spell$/, @spells));
+
+    return $spell;
+}
+
+sub firstmisc
+{
+    my @spells=('Dummy 1st misc',
+                'Comprehend Languages',
+                'Detect Magic',
+                'Erase',
+                'Find Familiar',
+                'Identify',
+                'Mending',
+                'Message',
+                'Unseen Servant',
+                'Write'
+        );
+
+    my $spell='';
+
+    my $d10=roll(1,10);
+    if($d10<10)
+    {
+        return $spells[$d10];
+    }
+
+    do
+    {
+        $spell=getspell(1,$masterfile);
+    }until(grep(/^$spell$/, @spells));
+
+    return $spell;
 }
