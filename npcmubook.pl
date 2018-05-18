@@ -4,12 +4,12 @@
 # the spells that the MU specifically failed their
 # "know spell" roll on
 
-$lv=shift || die("What level and INT is the NPC magic user?\n");
+$casterlevel=shift || die("What level and INT is the NPC magic user?\n");
 $int=shift || die("What INT is the NPC magic user?\n");
 $masterfile=shift || 'mubooks.org';
 $nonoknows = shift ;
 
-@numspells=spellsneeded($lv);
+@numspells=spellsneeded($casterlevel);
 @maxspells=((-1)x9,6,(7)x3,(9)x2,(11)x2,14,18);
 @knowspell=((-1)x9,35,(45)x3,(55)x2,(65)x2,75,85,95,96,97,98,99,100,100);
 
@@ -25,6 +25,7 @@ print "\n";
 
 %allspells=();
 
+#Current spell level being generated.
 $L=1;
 foreach $levelspells(@numspells)
 {
@@ -43,7 +44,7 @@ foreach $levelspells(@numspells)
         map {$allspells{$_}=1} @thesespells;
     }
 
-    $levelspells=$levelspells+($lv-firstget($L));
+    $levelspells=$levelspells+($casterlevel-firstget($L));
     
     $levelspells=min($levelspells,$limit);
 
@@ -178,11 +179,11 @@ sub spellsneeded
                [ 7 , 7 , 7 , 7 , 7 , 7 , 7 , 6, 6]
         );
 
-    my $lv=shift;
+    my $casterlevel=shift;
 
-    $lv=30 if $lv>30;
+    $casterlevel=30 if $casterlevel>30;
 
-    return @{$table[$lv]};
+    return @{$table[$casterlevel]};
 }
 
 sub firstget
@@ -200,7 +201,7 @@ sub firstget
 
 sub getspell
 {
-    my $lv=shift;
+    my $casterlevel=shift;
     my $masterfile=shift;
     my $result='';
 
@@ -219,8 +220,8 @@ sub getspell
 
             @parts=split/\s*\|\s*/;
             shift @parts;  #empty 1st col
-            my $spell=$parts[($lv-1)*2];
-            $freq=$parts[($lv-1)*2+1];
+            my $spell=$parts[($casterlevel-1)*2];
+            $freq=$parts[($casterlevel-1)*2+1];
             $freq=0 if $allspells{$spell};
 
             if($spell && $freq)
