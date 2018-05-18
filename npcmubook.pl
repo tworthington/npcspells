@@ -20,10 +20,13 @@ $V=40;
 $X=10000; # Special for "always take"
 $,=',';
 
+print "Per day: @numspells \n";
+print "\n";
+
 %allspells=();
 
 $L=1;
-foreach $level(@numspells)
+foreach $levelspells(@numspells)
 {
     last if($L>$int/2);
     my $limit=$maxspells[$int];
@@ -35,17 +38,17 @@ foreach $level(@numspells)
 
     if($L==1)
     {
-        $level+=3;
+        $levelspells+=3;
         push @thesespells,(firstoff(),firstdef(),firstmisc());
         map {$allspells{$_}=1} @thesespells;
     }
 
-    $level=$level+($lv-firstget($L));
+    $levelspells=$levelspells+($lv-firstget($L));
     
-    $level=min($level,$limit);
+    $levelspells=min($levelspells,$limit);
 
     $rerolls=3;
-    while(@thesespells < $level)
+    while(@thesespells < $levelspells || (@thesespells < $levelspells && $rerolls--))
     {
         my $spell=getspell($L,$masterfile);
         if($spell)
@@ -58,7 +61,7 @@ foreach $level(@numspells)
             else
             {
                 push @unknown, ($spell);
-                $level-=1 if $rerolls--<1 && $L>1;
+#                $levelspells-=1 if $rerolls--<1 && $L>1 && @thesespells>2;
             }
             $allspells{$spell}=1;
         }
